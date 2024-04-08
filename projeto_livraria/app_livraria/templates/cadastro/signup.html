@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Livraria</title>
+
+  {% load static %}
+
+  <!-- ---------------- estilos compartilhados entre login e signup ---------------- -->
+  <link rel="stylesheet" href="{% static 'app/styles/acesso.css' %}">
+  <link rel="stylesheet" href="{% static 'app/styles/loaders.css' %}">
+
+  <!-- ---------------------- lógica aplicada no registro -------------------- -->
+  <!-- <script src="/scripts/utils.js"></script> -->
+  <script src="{% static 'app/js/signup.js' %}"></script>
+  <script src="{% static 'app/js/loaders.js' %}"></script>
+  <script src="{% static 'app/js/utils.js' %}"></script>
+
+  <!-- ----------------------------- sweet alert ----------------------------- -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</head>
+
+<body>
+
+  <div class="left">
+    <img src="{% static 'app/assets/o-que-compoe-o-preco-de-um-livro-no-brasil-vista-frontal-de-livros-empilhados-e-escadas-para-o-dia-da-educacao-scaled.jpg' %}" alt="">
+  </div>
+  <div class="right">
+    <form method="post" >
+      {% csrf_token %} <!-- Adicionando o token CSRF -->
+      <div class="form-header">
+        <p>Criar conta</p>
+      </div>
+
+      <!-- Mensagens de erro -->
+      {% if messages %}
+      <div class="messages">
+        <ul>
+          {% for message in messages %}
+          <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      <label>
+        Nome:
+        <input id="nome" type="text" name="nome">
+        <small id="avisoNome"></small>
+      </label>
+      <label>
+        Sobrenome:
+        <input id="sobrenome" type="text" name="sobrenome">
+        <small id="avisoSobrenome"></small>
+      </label>
+      <label>
+        Email:
+        <input id="email" type="email" name="email">
+        <small id="avisoEmail"></small>
+      </label>
+      <label>
+        Senha:
+        <input id="senha" type="password" name="senha">
+        <small id="avisoSenha"></small>
+      </label>
+      <label>
+        Repetir senha:
+        <input id="confirmaSenha" type="password" name="confirmaSenha">
+        <small id="avisoConfirmaSenha"></small>
+      </label>
+
+      <button id="criar">Criar</button>
+    </form>
+    <div class="ingressar">
+      <a href="{% url 'login' %}">Já possui conta? Acesse aqui</a>
+    </div>
+  </div>
+
+</body>
+
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Livraria</title>
+
+ 
+  {% load static %}
+  <!-- ---------------- estilos compartilhados entre login e signup ---------------- -->
+  <link rel="stylesheet" href="{% static 'app/styles/acesso.css' %}">
+  <link rel="stylesheet" href="{% static 'app/styles/loaders.css' %}">
+
+</head>
+
+<body>
+  <div class="left">
+    <h1>Livraria</h1>
+    <img src="{% static 'app/assets/o-que-compoe-o-preco-de-um-livro-no-brasil-vista-frontal-de-livros-empilhados-e-escadas-para-o-dia-da-educacao-scaled.jpg' %}" alt="">
+  </div>
+
+  <div class="right">
+    <!-- Mensagens de erro aqui -->
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <!-- Adicionando proteção CSRF -->
+    {% csrf_token %}
+
+    <form action="{% url 'login' %}" method="POST">
+      {% csrf_token %} <!-- Adicionando o token CSRF -->
+      <div class="form-header">
+      </div>
+      <h1>Acessar</h1>
+      <label>
+        Email:
+        <input id="inputEmail" type="text" name="inputEmail"> <!-- Adicione o atributo name -->
+      </label>
+      <label>
+        Senha:
+        <input id="inputPassword" type="password" name="inputPassword"> <!-- Adicione o atributo name -->
+      </label>
+
+      <button id="botaoAcessar" type="submit">Acessar</button>
+
+    </form>
+    <div class="ingressar">
+      <a href="{% url 'signup' %}">Não possui conta? Crie agora mesmo</a>
+    </div>
+  </div>
+
+</body>
+
+</html>

@@ -13,9 +13,6 @@ mydb = mysql.connector.connect(
 app = Flask(__name__)
 
 
-
-
-
 '''livros = [
     {
         'id': 1,
@@ -49,7 +46,7 @@ def obter_livros():
         })
     return jsonify(livros)
 
-
+#consultar livro por id
 @app.route('/livros/<int:id>', methods=['GET'])
 def obter_livro_por_id(id):
     my_cursor = mydb.cursor()
@@ -63,7 +60,6 @@ def obter_livro_por_id(id):
         })
     else:
         return jsonify({'mensagem': 'Livro não encontrado'}), 404
-
 
 
 if __name__ == '__main__':
