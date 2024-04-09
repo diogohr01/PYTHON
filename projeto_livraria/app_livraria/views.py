@@ -3,43 +3,27 @@ from django.contrib.auth import authenticate
 from django.contrib import messages  # Importe a biblioteca de mensagens do Django
 from .models import Usuario
 from django.contrib.auth import logout
+from django.contrib.auth.decorators import login_required
 
 
-def login(request):
-    erros = []  # Inicializa a lista de erros
-
+def livros(request):
     if request.method == 'POST':
         email = request.POST.get('inputEmail')
         senha = request.POST.get('inputPassword')
-        
-        if not email:
-            erros.append('Preencha o Email.')
-        if not senha:
-            erros.append('Preencha a senha.')
-
-        if erros:
-            # Se houver erros, exibe as mensagens de erro
-            for erro in erros:
-                messages.error(request, erro)
-            
         
         # Verifica se o usuário com o email e senha fornecidos existe na tabela de Usuário
         usuario = Usuario.objects.filter(email=email, senha=senha).first()
 
         if usuario is not None:
             # Usuário autenticado com sucesso
-            # Redireciona para a página de tarefas
-            return render(request, 'cadastro/index.html', {'logado': True})
+            return render(request, 'cadastro/livros.html', {'usuario': usuario})
         else:
             # Credenciais inválidas
-            erros.append("Email ou senha incorretos. Por favor, tente novamente.")
-            # Adicione a mensagem de erro
-
-            # Redireciona de volta para a página de login
-            return redirect('login')
+            messages.error(request, "Email ou senha incorretos. Por favor, tente novamente.")
+            return redirect('login')  # Redireciona de volta para a página de login
 
     # Se não for uma requisição POST, renderiza o template de login
-    return render(request, 'cadastro/index.html')
+    return redirect('login')  # Redireciona de volta para a página de login se o usuário tentar acessar diretamente a URL
 
 
     
@@ -89,11 +73,25 @@ def signup(request):
 
 
 
-def livros(request):
-    
-
-    return render(request, 'cadastro/livros.html')
-
 def finalizar_sessao(request):
     logout(request)
     return redirect('login')
+
+def livros(request):
+    if request.method == 'POST':
+        email = request.POST.get('inputEmail')
+        senha = request.POST.get('inputPassword')
+        
+        # Verifica se o usuário com o email e senha fornecidos existe na tabela de Usuário
+        usuario = Usuario.objects.filter(email=email, senha=senha).first()
+
+        if usuario is not None:
+            # Usuário autenticado com sucesso
+            return render(request, 'cadastro/livros.html', {'usuario': usuario})
+        else:
+            # Credenciais inválidas
+            messages.error(request, "Email ou senha incorretos. Por favor, tente novamente.")
+            return redirect('login')  # Redireciona de volta para a página de login
+
+    # Se não for uma requisição POST, renderiza o template de login
+    return redirect('livros')  # Redireciona de volta para a página de login se o usuário tentar acessar diretamente a URL

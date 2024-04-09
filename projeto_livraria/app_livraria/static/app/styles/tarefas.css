@@ -53,8 +53,8 @@ a {
   display: flex;
   align-items: center;
   background-color: white;
-  width: 80%;
-  margin: 0 10%;
+  width: 30%;
+    margin: 0 10%;
   padding: 1em;
   box-shadow: 2px 2px 10px lightgrey;
   border-radius: .2em;

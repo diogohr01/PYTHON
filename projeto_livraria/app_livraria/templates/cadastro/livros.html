@@ -53,13 +53,13 @@
   </header>
 
 
-  <form class="nova-tarefa">
-    <div class="not-done "></div>
-    <input id="novaTarefa" type="text" placeholder="Novo Livro">
+  <div class="nova-tarefa">
+    <p>Novo Livro</p>
     <button id="botaoNovaTarefa" type="submit">
-      <img src="./assets/plus.png" alt="Adicionar um novo livro">
+
+      <img src="{% static 'app/assets/plus.png' %}" alt="Adicionar um novo livro">
     </button>
-  </form>
+  </div>
 
 
   <ul class="tarefas-pendentes">
