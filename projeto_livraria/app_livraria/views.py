@@ -29,7 +29,7 @@ def login(request):
         if usuario is not None:
             # Usuário autenticado com sucesso
             # Redireciona para a página de tarefas
-            return render(request, 'cadastro/index.html', {'logado': True})
+            return render(request, 'index.html', {'logado': True})
         else:
             # Credenciais inválidas
             erros.append("Email ou senha incorretos. Por favor, tente novamente.")
@@ -39,7 +39,7 @@ def login(request):
             return redirect('login')
 
     # Se não for uma requisição POST, renderiza o template de login
-    return render(request, 'cadastro/index.html')
+    return render(request, 'index.html')
 
 
     
@@ -47,8 +47,10 @@ def login(request):
 
 
 def signup(request):
-    if request.method == 'POST':
-        # Obtém os dados do formulário
+    if request.method =='GET':
+        return render(request, 'signup.html')
+
+    else:    # Obtém os dados do formulário
         nome = request.POST.get('nome')
         sobrenome = request.POST.get('sobrenome')
         email = request.POST.get('email')
@@ -81,10 +83,9 @@ def signup(request):
             Usuario.objects.create(nome=nome_completo, email=email, senha=senha)
 
             # Redireciona para a página de login após o cadastro
-            return render(request, 'cadastro/signup.html', {'cadastrado': True})
+            return render(request, 'signup.html', {'cadastrado': True})
 
     # Renderiza o template do formulário de cadastro
-    return render(request, 'cadastro/signup.html')
 
 
 
