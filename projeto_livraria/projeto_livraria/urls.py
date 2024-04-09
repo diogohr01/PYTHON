@@ -1,6 +1,6 @@
 
 from app_livraria import views
-from django.urls import path
+from django.urls import path, include 
 
 urlpatterns = [
     #rota, view responsavel, nome de referencia
@@ -10,6 +10,10 @@ urlpatterns = [
     path('livros', views.livros, name='livros'),  # Defina esta URL nomeada
     
     path('cadastro', views.signup, name='signup'),
+    
+    path('finalizar-sessao/', views.finalizar_sessao, name='finalizar_sessao'),
+    
+        
     
 ]
 

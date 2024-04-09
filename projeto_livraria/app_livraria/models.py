@@ -6,3 +6,5 @@ class Usuario(models.Model):
     email = models.EmailField(unique=True)
     senha = models.CharField(max_length=128) 
     nome = models.TextField(max_length=255)
+    
+    

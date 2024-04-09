@@ -112,3 +112,7 @@ button {
 .aviso.mostrar {
   opacity: 1;
 }
+
+#criar {
+  background-color: rgb(79, 79, 192);
+}

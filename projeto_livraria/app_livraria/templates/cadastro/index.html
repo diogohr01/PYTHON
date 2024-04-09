@@ -11,7 +11,10 @@
   {% load static %}
   <!-- ---------------- estilos compartilhados entre login e signup ---------------- -->
   <link rel="stylesheet" href="{% static 'app/styles/acesso.css' %}">
-  <link rel="stylesheet" href="{% static 'app/styles/loaders.css' %}">
+  <link rel="stylesheet" href="{% static 'app/styles/common.css' %}">
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 
 </head>
 
@@ -22,13 +25,14 @@
   </div>
 
   <div class="right">
-    <!-- Mensagens de erro aqui -->
     {% if messages %}
-    <ul class="messages">
+    <div class="messages">
+      <ul>
         {% for message in messages %}
-            <li>{{ message }}</li>
+        <li class="error">{{ message }}</li>
         {% endfor %}
-    </ul>
+      </ul>
+    </div>
     {% endif %}
 
     <!-- Adicionando proteção CSRF -->
@@ -57,5 +61,68 @@
   </div>
 
 </body>
+<script>
+  // Seletor para a div de mensagens
+  const messagesDiv = document.querySelector('.messages');
+
+// Exibir as mensagens e fazer desaparecer gradualmente após 5 segundos
+if (messagesDiv) {
+  messagesDiv.style.display = 'block'; // Exibe as mensagens
+
+  // Função para fazer as mensagens desaparecerem aos poucos
+  setTimeout(() => {
+    messagesDiv.style.transition = 'opacity 1s'; // Adiciona uma transição suave
+    messagesDiv.style.opacity = 0; // Define a opacidade para 0
+    setTimeout(() => {
+      messagesDiv.style.display = 'none'; // Oculta as mensagens após a transição
+    }, 800); // Tempo da transição em milissegundos (1 segundo)
+  }, 1500); // Tempo para iniciar o desaparecimento em milissegundos (5 segundos)
+}
+</script>
+<style>
+
+   /* Estilos para as mensagens */
+   .messages {
+    display: none; /* Inicia oculta */
+    width: 300px;
+    margin-bottom: 20px;
+  }
+
+  .messages ul {
+    list-style-type: none;
+    padding: 0;
+  }
+
+  .messages li {
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    align-items: center;
+  }
+
+  .messages .error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+  }
+</style>
+{% if logado %}
+<script>
+    // Exibe o SweetAlert
+    Swal.fire({
+        icon: 'success',
+        title: 'Login realizado',
+        text: 'Seu login foi realizado com sucesso!',
+        showConfirmButton: false, // Não exibir o botão de confirmação
+        timer: 3000 // Fechar automaticamente após 3 segundos
+    });
+
+    // Redireciona para a página de livros após um atraso
+    setTimeout(function() {
+        window.location.href = "{% url 'livros' %}";
+    }, 3000); // Redirecionar após 3 segundos
+</script>
+{% endif %}
+
 
 </html>

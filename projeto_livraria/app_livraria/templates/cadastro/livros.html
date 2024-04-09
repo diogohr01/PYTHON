@@ -5,10 +5,15 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+  {% load static %}
+
   <!-- ----------------------------- estilos CSS ----------------------------- -->
-  <link rel="stylesheet" href="./styles/tarefas.css">
+  <link rel="stylesheet" href="{% static 'app/styles/tarefas.css' %}">
+  <link rel="stylesheet" href="{% static 'app/styles/loaders.css' %}">
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-  <link rel="stylesheet" href="styles/loaders.css">
+
 
   <!-- ------------------- Biblioteca de icones - Fontawesome -------------------- -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
@@ -27,17 +32,19 @@
   <script src="./scripts/loaders.js"></script>
 
 
-  <title>Você em movimento - tarefas</title>
+  <title>Livros</title>
 </head>
 
 <body>
   <header>
     <nav>
-      <a href="#">Tarefas</a>
+      <a href="#">Livros</a>
     </nav>
 
     <div class="user-info">
-      <p id="nomeUsuario">Buscando usuário</p>
+      <p id="nomeUsuario">{{ nome_usuario }}</p>
+  
+  
       <div class="user-image"></div>
       <button id="closeApp" type="submit">
         Finalizar sessão
@@ -48,9 +55,9 @@
 
   <form class="nova-tarefa">
     <div class="not-done "></div>
-    <input id="novaTarefa" type="text" placeholder="Nova tarefa">
+    <input id="novaTarefa" type="text" placeholder="Novo Livro">
     <button id="botaoNovaTarefa" type="submit">
-      <img src="./assets/plus.png" alt="Adicionar uma nova tarefa">
+      <img src="./assets/plus.png" alt="Adicionar um novo livro">
     </button>
   </form>
 
@@ -64,12 +71,45 @@
 
   </ul>
 
-  <h2 class="titulo-terminadas">Tarefas terminadas</h2>
+  <h2 class="titulo-terminadas">Livros Alugados</h2>
   <ul class="tarefas-terminadas">
     <div id="addTarefasTerminadas">
     </div>
   </ul>
 
 </body>
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script>
+  const closeAppBtn = document.getElementById('closeApp');
+
+  closeAppBtn.addEventListener('click', function() {
+      fetch("{% url 'finalizar_sessao' %}", {
+          method: 'POST',  // ou 'GET' se preferir
+          headers: {
+              'X-CSRFToken': '{{ csrf_token }}'
+          },
+          // Adicione outras configurações de solicitação, se necessário
+      })
+      .then(response => {
+          // Exibe o SweetAlert de confirmação
+          swal("Sessão finalizada!", {
+            icon: "success",
+            buttons: false,
+            timer: 1500,
+          })
+          .then(() => {
+            // Redireciona para a página de login após finalizar a sessão
+            window.location.href = "{% url 'login' %}";
+          });
+      })
+      .catch(error => {
+          console.error('Ocorreu um erro ao finalizar a sessão:', error);
+          // Exibe o SweetAlert de erro
+          swal("Erro!", "Ocorreu um erro ao finalizar a sessão. Por favor, tente novamente mais tarde.", "error");
+      });
+  });
+</script>
+
 
 </html>

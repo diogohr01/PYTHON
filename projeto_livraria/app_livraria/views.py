@@ -2,29 +2,48 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate
 from django.contrib import messages  # Importe a biblioteca de mensagens do Django
 from .models import Usuario
+from django.contrib.auth import logout
+
 
 def login(request):
+    erros = []  # Inicializa a lista de erros
+
     if request.method == 'POST':
         email = request.POST.get('inputEmail')
         senha = request.POST.get('inputPassword')
+        
+        if not email:
+            erros.append('Preencha o Email.')
+        if not senha:
+            erros.append('Preencha a senha.')
 
+        if erros:
+            # Se houver erros, exibe as mensagens de erro
+            for erro in erros:
+                messages.error(request, erro)
+            
+        
         # Verifica se o usuário com o email e senha fornecidos existe na tabela de Usuário
         usuario = Usuario.objects.filter(email=email, senha=senha).first()
 
         if usuario is not None:
             # Usuário autenticado com sucesso
             # Redireciona para a página de tarefas
-            return redirect('livros')
+            return render(request, 'cadastro/index.html', {'logado': True})
         else:
             # Credenciais inválidas
-            mensagem = "Email ou senha incorretos. Por favor, tente novamente."
-            messages.error(request, mensagem)  # Adicione a mensagem de erro
+            erros.append("Email ou senha incorretos. Por favor, tente novamente.")
+            # Adicione a mensagem de erro
 
             # Redireciona de volta para a página de login
             return redirect('login')
-    else:
-        return render(request, 'cadastro/index.html')
+
+    # Se não for uma requisição POST, renderiza o template de login
+    return render(request, 'cadastro/index.html')
+
+
     
+
 
 
 def signup(request):
@@ -36,35 +55,45 @@ def signup(request):
         senha = request.POST.get('senha')
         confirma_senha = request.POST.get('confirmaSenha')
 
+        # Lista para armazenar mensagens de erro
+        erros = []
+
         # Validação dos campos
         if not nome:
-            messages.error(request, 'O campo Nome é obrigatório.')
+            erros.append('O campo Nome é obrigatório.')
         if not sobrenome:
-            messages.error(request, 'O campo Sobrenome é obrigatório.')
+            erros.append('O campo Sobrenome é obrigatório.')
         if not email:
-            messages.error(request, 'O campo Email é obrigatório.')
+            erros.append('O campo Email é obrigatório.')
         if not senha:
-            messages.error(request, 'O campo Senha é obrigatório.')
+            erros.append('O campo Senha é obrigatório.')
         if senha != confirma_senha:
-            messages.error(request, 'As senhas não coincidem.')
+            erros.append('As senhas não coincidem.')
 
-        # Se não houver erros de validação, crie o usuário
-        if not messages.get_messages(request):
-    # Crie o usuário com os dados fornecidos
+        # Se houver erros, exibe as mensagens de erro
+        if erros:
+            for erro in erros:
+                messages.error(request, erro)
+        else:
+            
+            # Cria o usuário com os dados fornecidos
             nome_completo = f"{nome} {sobrenome}"
-            Usuario.objects.create(
-        nome=nome_completo,
-        email=email,
-        senha=senha
-        )
-            # Redirecione para algum lugar após o cadastro
-        return redirect('login')
+            Usuario.objects.create(nome=nome_completo, email=email, senha=senha)
 
-    # Se a solicitação for GET ou se houver erros de validação, renderize o template do formulário de cadastro
+            # Redireciona para a página de login após o cadastro
+            return render(request, 'cadastro/signup.html', {'cadastrado': True})
+
+    # Renderiza o template do formulário de cadastro
     return render(request, 'cadastro/signup.html')
 
 
 
 
 def livros(request):
+    
+
     return render(request, 'cadastro/livros.html')
+
+def finalizar_sessao(request):
+    logout(request)
+    return redirect('login')
