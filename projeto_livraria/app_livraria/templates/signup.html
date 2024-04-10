@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Livraria</title>
+
+  {% load static %}
+
+  <!-- ---------------- estilos compartilhados entre login e signup ---------------- -->
+  <link rel="stylesheet" href="{% static 'app/styles/acesso.css' %}">
+  <link rel="stylesheet" href="{% static 'app/styles/loaders.css' %}">
+
+  <!-- ---------------------- lógica aplicada no registro -------------------- -->
+  <!-- <script src="/scripts/utils.js"></script> -->
+
+  <link rel="stylesheet" href="https://cdn.linearicons.com/free/1.0.0/icon-font.min.css">
+  <!-- ----------------------------- sweet alert ----------------------------- -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</head>
+
+<body>
+
+  <div class="left">
+    <img src="{% static 'app/assets/o-que-compoe-o-preco-de-um-livro-no-brasil-vista-frontal-de-livros-empilhados-e-escadas-para-o-dia-da-educacao-scaled.jpg' %}" alt="">
+  </div>
+  <div class="right">
+    <!-- Mensagens de erro -->
+    {% if messages %}
+    <div class="messages">
+      <ul>
+        {% for message in messages %}
+        <li class="error">{{ message }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+    <form method="post" action="{% url 'signup'%}">
+      <div class="form-header">
+        <p>Criar conta</p>
+      </div>
+      <!-- Adicionando proteção CSRF -->
+      {% csrf_token %}
+
+      <label>
+        Nome:
+        <input id="username" type="text" name="username">
+        <small id="avisoNome"></small>
+      </label>
+      <label>
+        Email:
+        <input id="email" type="email" name="email">
+        <small id="avisoEmail"></small>
+      </label>
+      <label>
+        Senha:
+        <div class="password-container">
+          <input id="senha" type="password" name="senha">
+          <span class="lnr lnr-eye"></span>
+          </span>
+        </div>
+        <small id="avisoSenha"></small>
+      </label>
+      <label>
+        Repetir senha:
+        <input id="confirmaSenha" type="password" name="confirmaSenha">
+        <small id="avisoConfirmaSenha"></small>
+      </label>
+
+      <button id="criar">Criar</button>
+    </form>
+    <div class="ingressar">
+      <a href="{% url 'login' %}">Já possui conta? Acesse aqui</a>
+    </div>
+  </div>
+
+</body>
+
+<style>
+  /* Estilos para as mensagens */
+  .messages {
+    display: none; /* Inicia oculta */
+    width: 300px;
+    margin-bottom: 20px;
+  }
+
+  .messages ul {
+    list-style-type: none;
+    padding: 0;
+  }
+
+  .messages li {
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 5px;
+  }
+
+  .messages .error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+  }
+
+  /* Estilos para o botão de visualização de senha */
+  .password-container {
+    position: relative;
+  }
+
+  .lnr-eye {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    cursor: pointer;
+}
+</style>
+
+<script>
+  let btn = document.querySelector('.lnr-eye');
+btn.addEventListener('click', function() {
+    let input = document.querySelector('#senha');
+    if(input.getAttribute('type') == 'password') {
+        input.setAttribute('type', 'text');
+    } else {
+        input.setAttribute('type', 'password');
+    }
+});
+
+
+   // Seletor para a div de mensagens
+const messagesDiv = document.querySelector('.messages');
+
+// Exibir as mensagens e fazer desaparecer gradualmente após 5 segundos
+if (messagesDiv) {
+  messagesDiv.style.display = 'block'; // Exibe as mensagens
+
+  // Verifica se a mensagem é de sucesso
+  const successMessage = "Usuário cadastrado com sucesso!";
+  const messageText = messagesDiv.innerText.trim(); // Obtém o texto da mensagem e remove espaços em branco
+
+  if (messageText === successMessage) {
+    // Define o background color como verde se for uma mensagem de sucesso
+    messagesDiv.style.backgroundColor = 'green';
+  }
+
+  // Função para fazer as mensagens desaparecerem aos poucos
+  setTimeout(() => {
+    messagesDiv.style.transition = 'opacity 1s'; // Adiciona uma transição suave
+    messagesDiv.style.opacity = 0; // Define a opacidade para 0
+    setTimeout(() => {
+      messagesDiv.style.display = 'none'; // Oculta as mensagens após a transição
+    }, 800); // Tempo da transição em milissegundos (1 segundo)
+  }, 1500); // Tempo para iniciar o desaparecimento em milissegundos (5 segundos)
+}
+
+
+let inputSenha = document.querySelector('#senha');
+
+// Adiciona um ouvinte de evento para o evento blur
+inputSenha.addEventListener('blur', function() {
+    // Define o tipo do campo de senha de volta para "password"
+    inputSenha.setAttribute('type', 'password');
+});
+// Verifique se há uma mensagem de sucesso e exiba-a usando o SweetAlert2
+ 
+</script>
+
+{% if cadastrado %}
+<script>
+  
+      // Exibe o SweetAlert
+      Swal.fire({
+          icon: 'success',
+          title: 'Cadastro realizado',
+          text: 'Seu usuário foi cadastrado com sucesso!',
+          showConfirmButton: false, // Não exibir o botão de confirmação
+          timer: 3000 // Fechar automaticamente após 3 segundos
+      });
+
+      // Redireciona para a página de login após um atraso
+      setTimeout(function() {
+          window.location.href = "{% url 'login' %}";
+      }, 3000); // Redirecionar após 3 segundos
+  
+</script>
+{% endif %}
+
+</html>
+
+
+

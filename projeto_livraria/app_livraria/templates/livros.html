@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+  {% load static %}
+
+  <!-- ----------------------------- estilos CSS ----------------------------- -->
+  <link rel="stylesheet" href="{% static 'app/styles/tarefas.css' %}">
+  <link rel="stylesheet" href="{% static 'app/styles/loaders.css' %}">
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+
+  <!-- ------------------- Biblioteca de icones - Fontawesome -------------------- -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!-- ----------------------------- sweet alert ----------------------------- -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <!-- CDN example (unpkg) -->
+  <script src="https://unpkg.com/dayjs@1.8.21/dayjs.min.js"></script>
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+  <script src="./scripts/tarefa.js"></script>
+  <script src="./scripts/utils.js"></script>
+  <script src="./scripts/loaders.js"></script>
+
+
+  <title>Livros</title>
+</head>
+
+<body>
+  <header>
+    <nav>
+      <a href="#">Livros</a>
+    </nav>
+
+    <div class="user-info">
+      <p id="nomeUsuario">{{ user.username }}</p>
+      <div class="user-image"></div>
+
+      <button id="closeApp" type="submit">
+        Finalizar sessão
+      </button>
+
+    </div>
+  </header>
+
+
+  <div class="nova-tarefa">
+    <p>Novo Livro</p>
+    <button id="botaoNovaTarefa" type="submit">
+      <img src="{% static 'app/assets/plus.png'%}">
+    </button>
+  </div>
+
+
+
+  <ul class="tarefas-pendentes">
+    <!-- <div id="skeleton"> -->
+
+    <div id="areaTarefas"></div>
+    <div id="addTarefasPendentes">
+    </div>
+
+  </ul>
+
+  <h2 class="titulo-terminadas">Livros Alugados</h2>
+  <ul class="tarefas-terminadas">
+    <div id="addTarefasTerminadas">
+    </div>
+  </ul>
+
+  <div id="container" class="escondido-container">
+    <div id="caixaFormulario" class="escondido">
+      <form id="formularioLivro" method="POST" action="{% url 'criar_livro' %}">
+        <div class="input-group">
+          <label for="nome_livro">Nome do livro:</label>
+          <input type="text" id="nome_livro" name="nome" required>
+        </div>
+        <div class="input-group">
+          <label for="autor_livro">Autor do livro:</label>
+          <input type="text" id="autor_livro" name="autor" required>
+        </div>
+        <div class="input-group">
+
+          <input type="submit" value="Enviar" id="enviar_livro">
+
+        </div>
+      </form>
+    </div>
+  </div>
+
+</body>
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script>
+  const closeAppBtn = document.getElementById('closeApp');
+
+  closeAppBtn.addEventListener('click', function () {
+    fetch("{% url 'finalizar_sessao' %}", {
+      method: 'POST',
+      request: 200,  // ou 'GET' se preferir
+      headers: {
+        'X-CSRFToken': '{{ csrf_token }}'
+      },
+      // Adicione outras configurações de solicitação, se necessário
+    })
+      .then(response => {
+        // Exibe o SweetAlert de confirmação
+        swal("Sessão finalizada!", {
+          icon: "success",
+          buttons: false,
+          timer: 1500,
+        })
+          .then(() => {
+            // Redireciona para a página de login após finalizar a sessão
+            window.location.href = "{% url 'login' %}";
+          });
+      })
+      .catch(error => {
+        console.error('Ocorreu um erro ao finalizar a sessão:', error);
+        // Exibe o SweetAlert de erro
+        swal("Erro!", "Ocorreu um erro ao finalizar a sessão. Por favor, tente novamente mais tarde.", "error");
+      });
+  });
+
+
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var botaoAbrir = document.getElementById('botaoNovaTarefa');
+    var caixaFormulario = document.getElementById('caixaFormulario');
+    var container = document.getElementById('container');
+
+    botaoAbrir.addEventListener('click', function () {
+      container.classList.add('aberto');
+
+      caixaFormulario.classList.add('mostrar');
+
+      caixaFormulario.classList.remove('escondido');
+
+      container.classList.remove('escondido-container');
+
+    });
+
+    var formularioLivro = document.getElementById('formularioLivro');
+
+    formularioLivro.addEventListener('submit', function (event) {
+      // Impede o envio padrão do formulário
+      event.preventDefault();
+
+      // Adicione aqui o código para enviar os dados do formulário
+      // Por exemplo, você pode fazer uma requisição AJAX para enviar os dados
+
+      // Depois de enviar os dados, você pode fechar o formulário
+      event.target.reset();
+      container.classList.add('escondido-container');
+      caixaFormulario.classList.remove('mostrar');
+
+      caixaFormulario.classList.add('escondido');
+
+
+
+    });
+  });
+
+
+
+</script>
+<style>
+  #container {
+
+    position: fixed;
+
+    top: 0;
+
+    left: 0;
+
+    width: 100%;
+
+    height: 100%;
+
+    background-color: rgba(199, 199, 199, 0.534);
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+  }
+
+  #container.escondido-container {
+
+    display: none;
+
+  }
+
+  .nova-tarefa {
+
+
+    margin-left: 60px;
+
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    background-color: rgb(160, 148, 148);
+
+    width: 9%;
+
+    padding: 0.5em;
+
+    box-shadow: 2px 2px 10px lightgrey;
+
+    border-radius: .2em;
+
+    z-index: 20;
+
+  }
+
+
+  .nova-tarefa p {
+
+    margin: 0;
+
+  }
+
+
+  .nova-tarefa button {
+
+    height: 2em;
+
+    width: 2em;
+
+    background-color: transparent;
+
+    margin: 0;
+
+    padding: 0;
+
+    opacity: .5;
+
+    cursor: pointer;
+
+  }
+
+
+  .nova-tarefa button:hover {
+
+    opacity: 1;
+
+  }
+
+
+  .nova-tarefa button img {
+
+    width: auto;
+
+    height: 100%;
+
+    object-fit: contain;
+
+  }
+
+  #caixaFormulario {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    /* Adiciona uma transição suave */
+  }
+
+  .escondido {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+
+  .mostrar {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  #container.fundoCinza {
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Fundo cinza semi-transparente */
+  }
+
+  .input-group {
+
+margin-bottom: 10px;
+
+}
+
+
+.input-group label {
+
+display: block;
+
+margin-bottom: 5px;
+
+}
+
+
+.input-group label::before {
+
+content: attr(data-content);
+
+margin-right: 10px;
+
+float: left;
+
+transition: all 0.3s ease;
+
+}
+
+
+.input-group input[type="text"],
+
+.input-group input[type="submit"] {
+
+width: 100%;
+
+padding: 10px;
+
+border: 1px solid #ccc;
+
+border-radius: 5px;
+
+box-sizing: border-box;
+
+}
+
+
+.input-group input[type="text"]:focus + label::before,
+
+.input-group input[type="text"]:valid + label::before {
+
+content: "✔";
+
+color: green;
+
+font-size: 1.5em;
+
+margin-right: 0;
+
+}
+
+
+.input-group input[type="text"]:focus,
+
+.input-group input[type="text"]:valid {
+
+border-color: #4caf50;
+
+}
+
+
+.input-group input[type="submit"] {
+
+background-color: #4caf50;
+
+color: white;
+
+cursor: pointer;
+
+}
+
+
+.input-group input[type="submit"]:hover {
+
+background-color: #3e8e41;
+
+}
+
+</style>
+
+</html>

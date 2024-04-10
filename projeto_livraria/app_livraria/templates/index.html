@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Livraria</title>
+
+ 
+  {% load static %}
+  <!-- ---------------- estilos compartilhados entre login e signup ---------------- -->
+  <link rel="stylesheet" href="{% static 'app/styles/acesso.css' %}">
+  <link rel="stylesheet" href="{% static 'app/styles/common.css' %}">
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+</head>
+
+<body>
+  <div class="left">
+    <h1>Livraria</h1>
+    <img src="{% static 'app/assets/o-que-compoe-o-preco-de-um-livro-no-brasil-vista-frontal-de-livros-empilhados-e-escadas-para-o-dia-da-educacao-scaled.jpg' %}" alt="">
+  </div>
+
+  <div class="right">
+    {% if messages %}
+    <div class="messages">
+      <ul>
+        {% for message in messages %}
+        <li class="error">{{ message }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    <!-- Adicionando proteção CSRF -->
+    {% csrf_token %}
+
+    <form action="{% url 'login' %}" method="POST">
+      {% csrf_token %} <!-- Adicionando o token CSRF -->
+      <div class="form-header">
+      </div>
+      <h1>Acessar</h1>
+      <label>
+        Nome:
+        <input id="username" type="text" name="username"> <!-- Adicione o atributo name -->
+      </label>
+      <label>
+        Senha:
+        <input id="senha" type="password" name="senha"> <!-- Adicione o atributo name -->
+      </label>
+
+      <button id="botaoAcessar" type="submit">Acessar</button>
+
+    </form>
+    <div class="ingressar">
+      <a href="{% url 'signup' %}">Não possui conta? Crie agora mesmo</a>
+    </div>
+  </div>
+
+</body>
+<script>
+  // Seletor para a div de mensagens
+  const messagesDiv = document.querySelector('.messages');
+
+// Exibir as mensagens e fazer desaparecer gradualmente após 5 segundos
+if (messagesDiv) {
+  messagesDiv.style.display = 'block'; // Exibe as mensagens
+
+  // Função para fazer as mensagens desaparecerem aos poucos
+  setTimeout(() => {
+    messagesDiv.style.transition = 'opacity 1s'; // Adiciona uma transição suave
+    messagesDiv.style.opacity = 0; // Define a opacidade para 0
+    setTimeout(() => {
+      messagesDiv.style.display = 'none'; // Oculta as mensagens após a transição
+    }, 800); // Tempo da transição em milissegundos (1 segundo)
+  }, 1500); // Tempo para iniciar o desaparecimento em milissegundos (5 segundos)
+}
+</script>
+<style>
+
+   /* Estilos para as mensagens */
+   .messages {
+    display: none; /* Inicia oculta */
+    width: 300px;
+    margin-bottom: 20px;
+  }
+
+  .messages ul {
+    list-style-type: none;
+    padding: 0;
+  }
+
+  .messages li {
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    align-items: center;
+  }
+
+  .messages .error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+  }
+</style>
+{% if logado %}
+<script>
+    // Exibe o SweetAlert
+    Swal.fire({
+        icon: 'success',
+        title: 'Login realizado',
+        text: 'Seu login foi realizado com sucesso!',
+        showConfirmButton: false, // Não exibir o botão de confirmação
+        timer: 3000 // Fechar automaticamente após 3 segundos
+    });
+
+    // Redireciona para a página de livros após um atraso
+    setTimeout(function() {
+        window.location.href = "{% url 'livros' %}";
+    }, 3000); // Redirecionar após 3 segundos
+</script>
+{% endif %}
+
+
+</html>

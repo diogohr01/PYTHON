@@ -1,97 +1,126 @@
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate
-from django.contrib import messages  # Importe a biblioteca de mensagens do Django
-from .models import Usuario
-from django.contrib.auth import logout
+from django.contrib.auth import authenticate, login as login_django, logout
+from django.contrib import messages
+from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from django.core.cache import cache
+from .models import Livros
+from hashlib import sha256
 
 
-def livros(request):
-    if request.method == 'POST':
-        email = request.POST.get('inputEmail')
-        senha = request.POST.get('inputPassword')
+def login(request):
+    if request.method == 'GET':
+        cache.clear()
+        return render(request, 'index.html')  # Renderiza o formulário de login
+
+    elif request.method == 'POST':
+        username = request.POST.get('username')
+        senha = request.POST.get('senha')
         
-        # Verifica se o usuário com o email e senha fornecidos existe na tabela de Usuário
-        usuario = Usuario.objects.filter(email=email, senha=senha).first()
-
-        if usuario is not None:
-            # Usuário autenticado com sucesso
-            return render(request, 'cadastro/livros.html', {'usuario': usuario})
+        # Autentica o usuário
+        user = authenticate(request, username=username, password=senha)
+        
+        if user is not None:
+            # Se as credenciais forem válidas, realiza o login
+            login_django(request, user)
+            return render(request, 'index.html', {'logado': True})  # Redireciona para a página de login após o cadastro
+  # Redireciona para a página 'livros' após o login
         else:
-            # Credenciais inválidas
-            messages.error(request, "Email ou senha incorretos. Por favor, tente novamente.")
+            # Se as credenciais forem inválidas, exibe uma mensagem de erro
+            messages.error(request, 'Credenciais inválidas. Por favor, tente novamente.')
             return redirect('login')  # Redireciona de volta para a página de login
 
-    # Se não for uma requisição POST, renderiza o template de login
-    return redirect('login')  # Redireciona de volta para a página de login se o usuário tentar acessar diretamente a URL
-
-
-    
 
 
 
 def signup(request):
-    if request.method == 'POST':
-        # Obtém os dados do formulário
-        nome = request.POST.get('nome')
-        sobrenome = request.POST.get('sobrenome')
+    if request.method == 'GET':
+        cache.clear()
+        # Remove a variável cadastrado da sessão se existir
+        if 'cadastrado' in request.session:
+            del request.session['cadastrado']
+        return render(request, 'signup.html')
+    else:
+        username = request.POST.get('username')
         email = request.POST.get('email')
         senha = request.POST.get('senha')
         confirma_senha = request.POST.get('confirmaSenha')
-
+        
+        
         # Lista para armazenar mensagens de erro
         erros = []
-
-        # Validação dos campos
-        if not nome:
-            erros.append('O campo Nome é obrigatório.')
-        if not sobrenome:
-            erros.append('O campo Sobrenome é obrigatório.')
+        
+        # Verifica se todos os campos foram preenchidos
+        if not username:
+            erros.append('Por favor, preencha o nome de usuário.')
         if not email:
-            erros.append('O campo Email é obrigatório.')
+            erros.append('Por favor, preencha o email.')
         if not senha:
-            erros.append('O campo Senha é obrigatório.')
+            erros.append('Por favor, preencha a senha.')
+        if not confirma_senha:
+            erros.append('Por favor, confirme a senha.')
+        
+        # Verifica se as senhas coincidem
         if senha != confirma_senha:
             erros.append('As senhas não coincidem.')
-
-        # Se houver erros, exibe as mensagens de erro
+        
+        # Verifica se o username e email já existem
+        existing_user = User.objects.filter(username=username).exists()
+        existing_email = User.objects.filter(email=email).exists()
+        
+        if existing_user:
+            erros.append('Este nome de usuário já está em uso. Por favor, escolha outro.')
+        if existing_email:
+            erros.append('Este email já está em uso. Por favor, escolha outro.')
+        
         if erros:
+            # Se houver erros, exibe as mensagens de erro e redireciona de volta para o formulário
             for erro in erros:
                 messages.error(request, erro)
+            return redirect('signup')
         else:
+            # Se não houver erros, cria o novo usuário
+            user = User.objects.create_user(username=username, email=email, password=senha)
+            user.save()
+                      
             
-            # Cria o usuário com os dados fornecidos
-            nome_completo = f"{nome} {sobrenome}"
-            Usuario.objects.create(nome=nome_completo, email=email, senha=senha)
-
-            # Redireciona para a página de login após o cadastro
-            return render(request, 'cadastro/signup.html', {'cadastrado': True})
-
-    # Renderiza o template do formulário de cadastro
-    return render(request, 'cadastro/signup.html')
-
-
+            return render(request, 'signup.html', {'cadastrado': True})  # Redireciona para a página de login após o cadastro
+ 
+ 
+@login_required        
+def livros(request):
+    if request.method == 'GET':
+        cache.clear()
+        return render(request, 'livros.html')
+            
 
 
 def finalizar_sessao(request):
-    logout(request)
-    return redirect('login')
-
-def livros(request):
-    if request.method == 'POST':
-        email = request.POST.get('inputEmail')
-        senha = request.POST.get('inputPassword')
+    # Limpa todos os dados da sessão, incluindo os cookies
+    if request.method == 500:
+        return redirect('livros')
+    else:
         
-        # Verifica se o usuário com o email e senha fornecidos existe na tabela de Usuário
-        usuario = Usuario.objects.filter(email=email, senha=senha).first()
+        request.session.flush()
 
-        if usuario is not None:
-            # Usuário autenticado com sucesso
-            return render(request, 'cadastro/livros.html', {'usuario': usuario})
-        else:
-            # Credenciais inválidas
-            messages.error(request, "Email ou senha incorretos. Por favor, tente novamente.")
-            return redirect('login')  # Redireciona de volta para a página de login
+    # Finaliza a sessão
+        logout(request)
+    
+    
+    
 
-    # Se não for uma requisição POST, renderiza o template de login
-    return redirect('livros')  # Redireciona de volta para a página de login se o usuário tentar acessar diretamente a URL
+def criar_livro(request):
+    if request.method == "POST":
+        nome = request.POST.get('nome_livro')
+        autor = request.POST.get('autor_livro')
+        # Processar outros campos do formulário
+        Livros.objects.create(nome=nome, autor=autor)
+        
+        
+    
+
+    
+
+
+    

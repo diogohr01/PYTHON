@@ -1,19 +1,12 @@
-
-from app_livraria import views
+from django.contrib import admin
 from django.urls import path, include 
+
 
 urlpatterns = [
     #rota, view responsavel, nome de referencia
-    
-    path('', views.login, name='login'),
-    #livro
-    path('livros', views.livros, name='livros'),  # Defina esta URL nomeada
-    
-    path('cadastro', views.signup, name='signup'),
-    
-    path('finalizar-sessao/', views.finalizar_sessao, name='finalizar_sessao'),
-    
-        
+    path('admin/', admin.site.urls),
+    path('', include('app_livraria.urls'))
+      # Redirecione a URL raiz para o aplicativo de autenticação    
     
 ]
 
