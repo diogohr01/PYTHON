@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from .models import Livros
 from hashlib import sha256
+from .forms import CadastroLivro
 
 
 def login(request):
@@ -110,12 +111,16 @@ def finalizar_sessao(request):
     
     
 
+
 def criar_livro(request):
-    if request.method == "POST":
-        nome = request.POST.get('nome_livro')
-        autor = request.POST.get('autor_livro')
-        # Processar outros campos do formulário
-        Livros.objects.create(nome=nome, autor=autor)
+     if request.method == 'POST':
+        form = CadastroLivro(request.POST)
+        
+        if form.is_valid():
+            form.save()
+            return redirect('livros')
+        else:
+            return HttpResponse('DADOS INVÁLIDOS')
         
         
     

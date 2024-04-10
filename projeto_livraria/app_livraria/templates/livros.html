@@ -79,15 +79,11 @@
 
   <div id="container" class="escondido-container">
     <div id="caixaFormulario" class="escondido">
-      <form id="formularioLivro" method="POST" action="{% url 'criar_livro' %}">
-        <div class="input-group">
-          <label for="nome_livro">Nome do livro:</label>
-          <input type="text" id="nome_livro" name="nome" required>
-        </div>
-        <div class="input-group">
-          <label for="autor_livro">Autor do livro:</label>
-          <input type="text" id="autor_livro" name="autor" required>
-        </div>
+      <form id="formularioLivro" method="POST" action="criar_livro">
+             {% csrf_token %}
+             <table>
+            {{form.as_table}}
+            </table>  
         <div class="input-group">
 
           <input type="submit" value="Enviar" id="enviar_livro">
