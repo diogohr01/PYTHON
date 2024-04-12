@@ -34,142 +34,119 @@
 
   <title>Livros</title>
 </head>
-
-<body>
-  <header>
-    <nav>
-      <a href="#">Livros</a>
-    </nav>
-
-    <div class="user-info">
-      <p id="nomeUsuario">{{ user.username }}</p>
-      <div class="user-image"></div>
-
-      <button id="closeApp" type="submit">
-        Finalizar sessão
-      </button>
-
-    </div>
-  </header>
-
-
-  <div class="nova-tarefa">
-    <p>Novo Livro</p>
-    <button id="botaoNovaTarefa" type="submit">
-      <img src="{% static 'app/assets/plus.png'%}">
-    </button>
-  </div>
-
-
-
-  <ul class="tarefas-pendentes">
-    <!-- <div id="skeleton"> -->
-
-    <div id="areaTarefas"></div>
-    <div id="addTarefasPendentes">
-    </div>
-
-  </ul>
-
-  <h2 class="titulo-terminadas">Livros Alugados</h2>
-  <ul class="tarefas-terminadas">
-    <div id="addTarefasTerminadas">
-    </div>
-  </ul>
-
-  <div id="container" class="escondido-container">
-    <div id="caixaFormulario" class="escondido">
-      <form id="formularioLivro" method="POST" action="criar_livro">
-             {% csrf_token %}
-             <table>
-            {{form.as_table}}
-            </table>  
-        <div class="input-group">
-
-          <input type="submit" value="Enviar" id="enviar_livro">
-
-        </div>
-      </form>
-    </div>
-  </div>
-
-</body>
-
-<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-<script>
-  const closeAppBtn = document.getElementById('closeApp');
-
-  closeAppBtn.addEventListener('click', function () {
-    fetch("{% url 'finalizar_sessao' %}", {
-      method: 'POST',
-      request: 200,  // ou 'GET' se preferir
-      headers: {
-        'X-CSRFToken': '{{ csrf_token }}'
-      },
-      // Adicione outras configurações de solicitação, se necessário
-    })
-      .then(response => {
-        // Exibe o SweetAlert de confirmação
-        swal("Sessão finalizada!", {
-          icon: "success",
-          buttons: false,
-          timer: 1500,
-        })
-          .then(() => {
-            // Redireciona para a página de login após finalizar a sessão
-            window.location.href = "{% url 'login' %}";
-          });
-      })
-      .catch(error => {
-        console.error('Ocorreu um erro ao finalizar a sessão:', error);
-        // Exibe o SweetAlert de erro
-        swal("Erro!", "Ocorreu um erro ao finalizar a sessão. Por favor, tente novamente mais tarde.", "error");
-      });
-  });
-
-
-
-  document.addEventListener('DOMContentLoaded', function () {
-    var botaoAbrir = document.getElementById('botaoNovaTarefa');
-    var caixaFormulario = document.getElementById('caixaFormulario');
-    var container = document.getElementById('container');
-
-    botaoAbrir.addEventListener('click', function () {
-      container.classList.add('aberto');
-
-      caixaFormulario.classList.add('mostrar');
-
-      caixaFormulario.classList.remove('escondido');
-
-      container.classList.remove('escondido-container');
-
-    });
-
-    var formularioLivro = document.getElementById('formularioLivro');
-
-    formularioLivro.addEventListener('submit', function (event) {
-      // Impede o envio padrão do formulário
-      event.preventDefault();
-
-      // Adicione aqui o código para enviar os dados do formulário
-      // Por exemplo, você pode fazer uma requisição AJAX para enviar os dados
-
-      // Depois de enviar os dados, você pode fechar o formulário
-      event.target.reset();
-      container.classList.add('escondido-container');
-      caixaFormulario.classList.remove('mostrar');
-
-      caixaFormulario.classList.add('escondido');
-
-
-
-    });
-  });
-
-
-
-</script>
 <style>
+.container {
+  margin: 20px;
+}
+
+.card-group {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.card {
+  width: calc(33.33% - 20px);
+  margin-bottom: 20px;
+  margin-right: 20px; /* Adicionando margem à direita de cada card */
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.card {
+  width: calc(33.33% - 20px);
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.card-img-top {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.card-body {
+  padding: 20px;
+}
+
+.card-title {
+  font-size: 1.25rem;
+  margin-bottom: 10px;
+}
+
+.card-text {
+  margin-bottom: 10px;
+}
+
+.list-group-item {
+  border: none;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f8f9fa; /* Cor de fundo */
+  padding: 10px 0; /* Espaçamento interno */
+  border-top: 1px solid #dee2e6; /* Borda superior */
+}
+
+.card-link {
+  color: #007bff; /* Cor do texto */
+  text-decoration: none; /* Sem sublinhado */
+  margin-left: 10px; /* Margem à esquerda para separar os links */
+}
+
+
+.card-link i {
+  margin-right: 5px; /* Margem à direita para separar o ícone do texto */
+}
+
+.card-link, .card-link button {
+  color: #007bff; /* Cor do texto */
+  text-decoration: none; /* Sem sublinhado */
+  margin: 0 10px; /* Margem entre os elementos */
+}
+
+
+.card-link:focus, .card-link button:focus {
+  outline: none; /* Remover contorno ao focar */
+}
+
+.card-link button {
+  border: none; /* Remover bordas */
+  background: none; /* Remover fundo */
+  cursor: pointer; /* Mudar cursor para ponteiro ao passar por cima */
+}
+
+.card-link:hover, .card-link button:hover {
+  color: #0056b3; /* Cor do texto ao passar o mouse */
+}
+
+/* Estilo para o botão de devolução */
+.card-body form {
+  text-align: right; /* Alinha o botão à direita */
+  margin-bottom: 10px; /* Adiciona espaço abaixo do botão */
+}
+
+.card-body button {
+  background-color: #007bff; /* Cor de fundo */
+  color: #fff; /* Cor do texto */
+  border: none; /* Remove a borda */
+  border-radius: 4px; /* Adiciona borda arredondada */
+  padding: 12px 24px; /* Aumenta o espaçamento interno */
+  font-size: 18px; /* Aumenta o tamanho da fonte */
+  cursor: pointer; /* Muda o cursor ao passar por cima */
+  transition: background-color 0.3s ease; /* Transição suave de cor de fundo */
+}
+
+.card-body button:hover {
+  background-color: #0056b3; /* Cor de fundo ao passar o mouse */
+}
+
+
   #container {
 
     position: fixed;
@@ -380,6 +357,300 @@ background-color: #3e8e41;
 
 }
 
+.fechar-btn {
+    background-color: transparent;
+    border: none;
+    color: #555; /* Cor do ícone */
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    position: absolute;
+    top: 10px;
+    left: 10px; /* Posição à esquerda */
+    padding: 5px;
+    border-radius: 50%; /* Para tornar o botão circular */
+    transition: background-color 0.3s ease;
+}
+
+.fechar-btn:hover {
+    background-color: #eee; /* Cor de fundo quando hover */
+}
+.user-image {
+  height: 2em;
+  width: 2em;
+  border-radius: 50%;
+  overflow: hidden; /* Esconder qualquer parte da imagem que saia dos limites da div */
+}
+
+.user-image img {
+  width: 100%; /* Ajustar a largura da imagem para preencher a div */
+  height: auto; /* Permitir que a altura seja ajustada automaticamente para manter a proporção */
+  display: block; /* Garantir que a imagem seja exibida como um bloco para evitar espaços extras */
+}
+
+/* Estilo para o título */
+.titulo-terminadas {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px; /* Adiciona espaço abaixo do título */
+}
+
+/* Estilo para o card */
+.livros-alugados {
+  list-style: none;
+  padding: 0;
+}
+
+.card {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  overflow: hidden;
+  transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.card-body {
+  padding: 20px;
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.card-subtitle {
+  color: #6c757d;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.card-text {
+  color: #495057;
+  font-size: 16px;
+}
+
+/* Estilo para o botão de devolução */
+.card-body form {
+  margin-top: 10px; /* Adiciona espaço acima do botão */
+}
+
+.card-body form button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.card-body form button:hover {
+  background-color: #0056b3;
+}
+
+
 </style>
+
+<body>
+  <header>
+    <nav>
+      <a href="#">Livros</a>
+    </nav>
+
+    <div class="user-info">
+      <p id="nomeUsuario">{{ user.username }}</p>
+      <div class="user-image"><img src="{% static 'app/assets/perfil.png'%}"></div>
+
+      <button id="closeApp" type="submit">
+        Finalizar sessão
+      </button>
+
+    </div>
+  </header>
+
+  {% if is_superuser %}
+
+  <div class="nova-tarefa">
+    <p>Novo Livro</p>
+    <button id="botaoNovaTarefa" type="submit">
+      <img src="{% static 'app/assets/plus.png'%}">
+    </button>
+  </div>
+  {% endif %}
+
+  <div class="container">
+    <div class="card-group">
+
+      {% for livro in livros %}
+        <div class="card">
+          <img src="{% static 'app/assets/o-que-compoe-o-preco-de-um-livro-no-brasil-vista-frontal-de-livros-empilhados-e-escadas-para-o-dia-da-educacao-scaled.jpg' %}" class="card-img-top">
+          <div class="card-body">
+            <h5 class="card-title">{{ livro.nome }}</h5>
+            <p class="card-text">Autor: {{ livro.autor }}</p>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item">Data de Cadastro: {{ livro.data_cadastro }}</li>
+             
+            </ul>
+          </div>
+          <div class="card-footer">
+            <form action="{% url 'alugar_livro' livro.id %}" method="post">
+              {% csrf_token %}
+              <button type="submit" class="card-link"><i class="fas fa-handshake"></i> Alugar</button>
+            </form>
+            <form method="post">
+              {% csrf_token %}
+              <button type="submit" class="card-link"><i class="fas fa-edit"></i> Editar</button>
+            </form>
+            <form action="{% url 'excluir_livro' livro.id %}" method="post">
+              {% csrf_token %}
+              <button type="submit" class="card-link"><i class="fas fa-trash-alt"></i> Excluir</button>
+            </form>
+          
+          </div>
+          
+        </div>
+      {% empty %}
+        <p>Nenhum livro encontrado.</p>
+      {% endfor %}
+    </div>
+  </div>
+  
+  
+
+  <h2 class="titulo-terminadas">Livros Alugados</h2>
+  <ul class="livros-alugados">
+    {% for livro in livros_alugados %}
+      <li class="card">
+        <div class="card-body">
+          <h5 class="card-title">{{ livro.nome }}</h5>
+          <h6 class="card-subtitle mb-2 text-muted">Autor: {{ livro.autor }}</h6>
+          <p class="card-text">Alugado por: {{ livro.usuario.username }}</p>
+          <!-- Outras informações do livro -->
+          <form action="{% url 'devolver_livro' livro.id %}" method="post">
+            {% csrf_token %}
+            <button type="submit">Devolver</button>
+          </form>
+          
+        </div>
+      </li>
+    {% endfor %}
+  </ul>
+  
+
+<div id="container" class="escondido-container">
+    <div id="caixaFormulario" class="escondido">
+        <button id="fecharFormulario" class="fechar-btn">X</button>     
+        <form id="formularioLivro" method="post" action="{% url 'criar_livro'%}">
+            {% csrf_token %}
+            <table>
+                <tr>
+                </tr>
+                {{ form.as_table }}
+                <tr>
+                </tr>
+            </table>
+            <div class="input-group">
+                <input type="submit" value="Cadastrar livro" id="enviar_livro">
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+
+</div>
+
+  </div>
+
+
+</body>
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script>
+  const closeAppBtn = document.getElementById('closeApp');
+
+  closeAppBtn.addEventListener('click', function () {
+    fetch("{% url 'finalizar_sessao' %}", {
+      method: 'POST',
+      request: 200,  // ou 'GET' se preferir
+      headers: {
+        'X-CSRFToken': '{{ csrf_token }}'
+      },
+      // Adicione outras configurações de solicitação, se necessário
+    })
+      .then(response => {
+        // Exibe o SweetAlert de confirmação
+        swal("Sessão finalizada!", {
+          icon: "success",
+          buttons: false,
+          timer: 1500,
+        })
+          .then(() => {
+            // Redireciona para a página de login após finalizar a sessão
+            window.location.href = "{% url 'login' %}";
+          });
+      })
+      .catch(error => {
+        console.error('Ocorreu um erro ao finalizar a sessão:', error);
+        // Exibe o SweetAlert de erro
+        swal("Erro!", "Ocorreu um erro ao finalizar a sessão. Por favor, tente novamente mais tarde.", "error");
+      });
+  });
+
+
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var botaoAbrir = document.getElementById('botaoNovaTarefa');
+    var caixaFormulario = document.getElementById('caixaFormulario');
+    var container = document.getElementById('container');
+
+    botaoAbrir.addEventListener('click', function () {
+        container.classList.add('aberto');
+        caixaFormulario.classList.add('mostrar');
+        caixaFormulario.classList.remove('escondido');
+        container.classList.remove('escondido-container');
+    });
+
+    var formularioLivro = document.getElementById('formularioLivro');
+
+    formularioLivro.addEventListener('submit', function (event) {
+        // Não impede o envio padrão do formulário para permitir que ele seja enviado
+        // event.preventDefault();
+
+        // Adicione aqui o código para enviar os dados do formulário
+        // Por exemplo, você pode fazer uma requisição AJAX para enviar os dados
+
+        // Depois de enviar os dados, você pode esconder o formulário
+        // Aqui está um exemplo de como fazer isso após um tempo de espera (1 segundo)
+        setTimeout(function () {
+            container.classList.add('escondido-container');
+            caixaFormulario.classList.remove('mostrar');
+            caixaFormulario.classList.add('escondido');
+            // Reseta o formulário após o envio
+            event.target.reset();
+        }, 1000); // Tempo de espera em milissegundos (1000 ms = 1 segundo)
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    var botaoFechar = document.getElementById('fecharFormulario');
+    var caixaFormulario = document.getElementById('caixaFormulario');
+    var container = document.getElementById('container');
+
+    botaoFechar.addEventListener('click', function () {
+        container.classList.add('escondido-container');
+        caixaFormulario.classList.add('escondido');
+    });
+});
+
+</script>
+
 
 </html>

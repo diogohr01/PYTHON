@@ -1,5 +1,5 @@
-from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login as login_django, logout
 from django.contrib import messages
 from django.contrib.auth.models import User
@@ -8,6 +8,8 @@ from django.core.cache import cache
 from .models import Livros
 from hashlib import sha256
 from .forms import CadastroLivro
+from django.utils import timezone
+from django.urls import reverse
 
 
 def login(request):
@@ -89,11 +91,19 @@ def signup(request):
             return render(request, 'signup.html', {'cadastrado': True})  # Redireciona para a página de login após o cadastro
  
  
-@login_required        
+@login_required
+
 def livros(request):
     if request.method == 'GET':
         cache.clear()
-        return render(request, 'livros.html')
+        form = CadastroLivro()
+        livros = Livros.objects.all().filter(emprestado=False)
+        livros_alugados = Livros.objects.all().filter(emprestado=True)   
+        return render(request, 'livros.html', {'form': form, 
+                                               'user': request.user, 
+                                               'is_superuser': request.user.is_superuser, 
+                                               'livros': livros,
+                                               'livros_alugados': livros_alugados})
             
 
 
@@ -109,23 +119,54 @@ def finalizar_sessao(request):
         logout(request)
     
     
-    
-
-
 def criar_livro(request):
-     if request.method == 'POST':
+    if request.method == 'POST':
         form = CadastroLivro(request.POST)
-        
         if form.is_valid():
             form.save()
-            return redirect('livros')
+            # Redirecionar para a página 'livros' após o salvamento bem-sucedido
+            return HttpResponseRedirect(reverse('livros'))
         else:
             return HttpResponse('DADOS INVÁLIDOS')
-        
-        
+    
+    
     
 
+def excluir_livro(request, livro_id):
+    # Verificar se a solicitação é do tipo POST
+    if request.method == 'POST':
+        # Tentar encontrar o livro pelo ID fornecido
+        livro = get_object_or_404(Livros, id=livro_id)
+        
+        # Excluir o livro
+        livro.delete()
+        
+        # Redirecionar para uma página de confirmação ou qualquer outra página desejada
+        return redirect('livros')
+    else:
+        # Se a solicitação não for do tipo POST, redirecionar para a página inicial ou exibir uma mensagem de erro
+        return redirect('livros')
     
+
+
+def alugar_livro(request, livro_id):
+    if request.method == 'POST':
+        livro = get_object_or_404(Livros, id=livro_id)
+        livro.usuario = request.user # Associa o usuário logado ao livro
+        livro.emprestado = True
+        livro.save()
+        
+        return redirect('livros')
+        
+
+def devolver_livro(request, livro_id):
+    if request.method == 'POST':
+        livro = get_object_or_404(Livros, id=livro_id)
+        livro.usuario = None  # Remove a associação do usuário
+        livro.emprestado = False  # Atualiza o status do livro para não emprestado
+        livro.save()
+        
+        return redirect('livros')
 
 
     

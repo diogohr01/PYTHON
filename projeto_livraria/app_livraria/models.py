@@ -1,5 +1,6 @@
 from django.db import models
 from datetime import date
+from django.contrib.auth.models import User
 
 class Livros(models.Model):
     nome = models.CharField(max_length=100)
@@ -10,6 +11,10 @@ class Livros(models.Model):
     data_devolucao = models.DateTimeField(blank=True, null = True)
     data_emprestimo = models.DateTimeField(blank=True, null = True)
     tempo_duracao = models.DateField(blank=True, null = True)
-    
+    usuario = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
+
     class Meta:
         verbose_name = 'Livro'
+
+    def __str__(self):
+        return self.nome
