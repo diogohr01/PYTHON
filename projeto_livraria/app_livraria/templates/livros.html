@@ -505,6 +505,8 @@ background-color: #3e8e41;
               {% csrf_token %}
               <button type="submit" class="card-link"><i class="fas fa-handshake"></i> Alugar</button>
             </form>
+            {% if is_superuser %}
+
             <form method="post">
               {% csrf_token %}
               <button type="submit" class="card-link"><i class="fas fa-edit"></i> Editar</button>
@@ -513,7 +515,8 @@ background-color: #3e8e41;
               {% csrf_token %}
               <button type="submit" class="card-link"><i class="fas fa-trash-alt"></i> Excluir</button>
             </form>
-          
+            {% endif %}
+
           </div>
           
         </div>
