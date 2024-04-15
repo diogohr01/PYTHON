@@ -10,6 +10,7 @@ from hashlib import sha256
 from .forms import CadastroLivro
 from django.utils import timezone
 from django.urls import reverse
+import openai
 
 
 def login(request):
@@ -123,6 +124,7 @@ def criar_livro(request):
     if request.method == 'POST':
         form = CadastroLivro(request.POST)
         if form.is_valid():
+            
             form.save()
             # Redirecionar para a página 'livros' após o salvamento bem-sucedido
             return HttpResponseRedirect(reverse('livros'))
@@ -169,4 +171,75 @@ def devolver_livro(request, livro_id):
         return redirect('livros')
 
 
+def detalhes_livro(request, livro_id):
+    # Obtém o nome do livro com o ID especificado
+    if request.method == 'POST':
+        livro = Livros.objects.get(id=livro_id)
+        nome_livro = livro.nome
+
+    # Prompt para a geração do texto
+        prompt = f"Dê-me uma sinopse de 250 caracteres sobre o livro '{nome_livro}'."
+
+    # Gera o texto com a OpenAI API
+        response = openai.Completion.create(
+        engine="text-davinci-003",
+        prompt=prompt,
+        max_tokens=250,
+        n=1,
+        stop="\n"
+        )
+
+    # Extrai o texto gerado da resposta
+        sinopse = response.choices[0].text.strip()
+
+    # Renderiza o template com a sinopse do livro
+        return render(request, 'livros.html', {'nome_livro': nome_livro, 'sinopse': sinopse})
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     

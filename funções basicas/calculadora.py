@@ -10,12 +10,10 @@ def parse_numero(numero):
             return None
 
 while True:
-    # Input do usuário
     numero1 = input('Digite um número: ')
     numero2 = input('Digite outro número: ')
     operador = input('Digite um operador (+ - * /): ')
 
-    # Checando se o número é válido
     n1_float = parse_numero(numero1)
     n2_float = parse_numero(numero2)
 
@@ -23,13 +21,11 @@ while True:
         print('Por favor, digite um número válido')
         continue
 
-    # Checando se o operador é válido
     operadores_validos = '+-*/'
     if len(operador) != 1 or operador not in operadores_validos:
         print('Por favor, digite um operador válido')
         continue
 
-    # Realizando a operação
     if operador == '+':
         resultado = n1_float + n2_float
     elif operador == '-':
@@ -45,7 +41,6 @@ while True:
 
     print(f'O resultado da operação é: {resultado}')
 
-    # Sair da calculadora
     sair = input('Deseja sair da calculadora? (sim/não): ').lower()
     if sair.startswith('s'):
         break

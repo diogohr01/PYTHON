@@ -35,6 +35,25 @@
   <title>Livros</title>
 </head>
 <style>
+.card {
+        position: relative;
+    }
+
+    .btn-detalhes {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: transparent;
+        border: none;
+        color: #333;
+        font-size: 20px;
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
+
+    .btn-detalhes:hover {
+        color: #007bff; /* Altere a cor ao passar o mouse, se desejar */
+    }
 .container {
   margin: 20px;
 }
@@ -491,6 +510,9 @@ background-color: #3e8e41;
 
       {% for livro in livros %}
         <div class="card">
+          <form action="" method="post">
+          <button class="btn-detalhes"><i class="fas fa-info-circle"></i></button> <!-- Botão de detalhes -->
+        </form>
           <img src="{% static 'app/assets/o-que-compoe-o-preco-de-um-livro-no-brasil-vista-frontal-de-livros-empilhados-e-escadas-para-o-dia-da-educacao-scaled.jpg' %}" class="card-img-top">
           <div class="card-body">
             <h5 class="card-title">{{ livro.nome }}</h5>
@@ -536,7 +558,6 @@ background-color: #3e8e41;
           <h5 class="card-title">{{ livro.nome }}</h5>
           <h6 class="card-subtitle mb-2 text-muted">Autor: {{ livro.autor }}</h6>
           <p class="card-text">Alugado por: {{ livro.usuario.username }}</p>
-          <!-- Outras informações do livro -->
           <form action="{% url 'devolver_livro' livro.id %}" method="post">
             {% csrf_token %}
             <button type="submit">Devolver</button>
@@ -567,6 +588,7 @@ background-color: #3e8e41;
     </div>
 </div>
 </div>
+
 
 </div>
 

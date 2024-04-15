@@ -20,6 +20,8 @@ urlpatterns = [
     
     path('alugar_livro/<int:livro_id>/', views.alugar_livro, name='alugar_livro'),
     
-    path('devolver_livro/<int:livro_id>', views.devolver_livro, name='devolver_livro')
+    path('devolver_livro/<int:livro_id>', views.devolver_livro, name='devolver_livro'),
+    
+    path('detalhes_livro/<int:livro_id>', views.devolver_livro, name='detalhes_livro')
     
 ]
